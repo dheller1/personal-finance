@@ -14,12 +14,14 @@ class SimpleEqualityMixin:
         return False
 
 
-class _Transaction(SimpleEqualityMixin):
-    def __init__(self, net_value, account=None, transaction_partner=None, date=None):
+class Transaction(SimpleEqualityMixin):
+    def __init__(self, net_value, account=None, transaction_partner=None, date=None, description=None, category=None):
         self.net_value = net_value
         self.account = account
         self.transaction_partner = transaction_partner
         self.date = date
+        self.category = category
+        self.description = description
 
     def affects(self, account):
         return account == self.account
@@ -33,17 +35,17 @@ class _Transaction(SimpleEqualityMixin):
         return self.net_value
 
 
-class Expense(_Transaction):
+class Expense(Transaction):
     def __init__(self, amount, account=None, receiver=None, date=None):
         super().__init__(-amount, account, receiver, date)
 
 
-class Income(_Transaction):
+class Income(Transaction):
     def __init__(self, amount, account=None, sender=None, date=None):
         super().__init__(amount, account, sender, date)
 
 
-class CarryOver(_Transaction):
+class CarryOver(Transaction):
     def __init__(self, amount, account_from, account_to, date=None):
         assert amount >= 0.
         super().__init__(amount, Self, date)
